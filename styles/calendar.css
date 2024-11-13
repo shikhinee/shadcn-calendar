@@ -1,0 +1,97 @@
+.fc-theme-custom {
+  --fc-border-color: hsl(var(--border));
+  --fc-page-bg-color: hsl(var(--background));
+  --fc-neutral-bg-color: hsl(var(--secondary));
+  --fc-list-event-hover-bg-color: hsl(var(--secondary));
+  --fc-today-bg-color: hsl(var(--secondary) / 0.3);
+}
+
+/* Time grid styles */
+.fc-timegrid-slot {
+  height: 48px !important;
+}
+
+.fc-timegrid-slot-label {
+  vertical-align: top;
+  padding-top: 8px;
+}
+
+/* Event styles */
+.fc-event {
+  background-color: hsl(var(--primary)) !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+}
+
+.fc-event-title {
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.fc-event-time {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* Grid lines */
+.fc td,
+.fc th {
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Current time indicator */
+.fc .fc-timegrid-now-indicator-line {
+  border-color: hsl(var(--destructive));
+}
+
+.fc .fc-timegrid-now-indicator-arrow {
+  border-color: hsl(var(--destructive));
+}
+
+/* Make the calendar header sticky */
+.fc .fc-view-harness {
+  background: hsl(var(--background));
+}
+
+.fc .fc-timegrid-axis-cushion,
+.fc .fc-timegrid-slot-label-cushion {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Sticky header styles */
+.fc .fc-timegrid-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: hsl(var(--background));
+}
+
+/* Scrollbar styles */
+.fc-scroller::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.fc-scroller::-webkit-scrollbar-track {
+  background: hsl(var(--secondary));
+  border-radius: 4px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Ensure proper height calculations */
+.fc,
+.fc-view-harness,
+.fc-view-harness-active,
+.fc-timegrid,
+.fc-timegrid-view {
+  height: 100% !important;
+}
