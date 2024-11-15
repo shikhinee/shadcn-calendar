@@ -1,25 +1,56 @@
 "use client";
 
 import Calendar from "@/components/calendar";
-import { CalendarEvent } from "@/types/calendar";
-import { generateSampleEvents } from "@/lib/sample-data";
+import { SAMPLE_BOOKINGS, Booking } from "@/lib/sample-data";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { CalendarEvent } from "@/types/calendar";
 
 export default function CalendarPage() {
-  const [events, setEvents] = useState<CalendarEvent[]>(generateSampleEvents());
+  const [bookings, setBookings] = useState<Booking[]>(SAMPLE_BOOKINGS.data);
+
+  // Transform bookings to calendar events
+  const transformBookingsToEvents = (bookings: Booking[]): CalendarEvent[] => {
+    return bookings.map((booking) => ({
+      id: booking.id.toString(),
+      title: `${booking.number_of_adults + booking.number_of_children} хүн`,
+      start: new Date(booking.schedule_time),
+      end: new Date(new Date(booking.schedule_time).getTime() + 60 * 60 * 1000), // 1 hour duration
+      extendedProps: {
+        user_id: booking.user_id,
+        business_id: booking.business_id,
+        service_id: booking.service_id,
+        status: booking.status,
+        number_of_adults: booking.number_of_adults,
+        number_of_children: booking.number_of_children,
+        additional_info: booking.additional_info,
+        phone: booking.phone,
+        is_arrived: booking.is_arrived,
+      },
+    }));
+  };
+
+  // Transform calendar event back to booking
+  const transformEventToBooking = (event: CalendarEvent): Booking => {
+    return {
+      id: parseInt(event.id),
+      schedule_time: event.start.toISOString(),
+      ...event.extendedProps,
+    };
+  };
 
   const handleEventAdd = async (event: CalendarEvent) => {
     try {
-      setEvents((prev) => [...prev, { ...event, id: Date.now().toString() }]);
+      const newBooking = transformEventToBooking(event);
+      setBookings((prev) => [...prev, newBooking]);
       toast({
-        title: "Event Added",
-        description: "The event has been successfully added.",
+        title: "Амжилттай",
+        description: "Захиалга нэмэгдлээ.",
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to add event.",
+        title: "Алдаа",
+        description: "Захиалга нэмэхэд алдаа гарлаа.",
         variant: "destructive",
       });
     }
@@ -30,19 +61,27 @@ export default function CalendarPage() {
     updates: Partial<CalendarEvent>
   ) => {
     try {
-      setEvents((prev) =>
-        prev.map((event) =>
-          event.id === id ? { ...event, ...updates } : event
+      setBookings((prev) =>
+        prev.map((booking) =>
+          booking.id === parseInt(id)
+            ? {
+                ...booking,
+                ...(updates.start && {
+                  schedule_time: updates.start.toISOString(),
+                }),
+                ...(updates.extendedProps && updates.extendedProps),
+              }
+            : booking
         )
       );
       toast({
-        title: "Event Updated",
-        description: "The event has been successfully updated.",
+        title: "Амжилттай",
+        description: "Захиалга шинэчлэгдлээ.",
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to update event.",
+        title: "Алдаа",
+        description: "Захиалга шинэчлэхэд алдаа гарлаа.",
         variant: "destructive",
       });
     }
@@ -50,15 +89,17 @@ export default function CalendarPage() {
 
   const handleEventDelete = async (id: string) => {
     try {
-      setEvents((prev) => prev.filter((event) => event.id !== id));
+      setBookings((prev) =>
+        prev.filter((booking) => booking.id !== parseInt(id))
+      );
       toast({
-        title: "Event Deleted",
-        description: "The event has been successfully deleted.",
+        title: "Амжилттай",
+        description: "Захиалга устгагдлаа.",
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to delete event.",
+        title: "Алдаа",
+        description: "Захиалга устгахад алдаа гарлаа.",
         variant: "destructive",
       });
     }
@@ -67,7 +108,7 @@ export default function CalendarPage() {
   return (
     <div className="h-screen p-4 bg-background">
       <Calendar
-        events={events}
+        events={transformBookingsToEvents(bookings)}
         onEventAdd={handleEventAdd}
         onEventUpdate={handleEventUpdate}
         onEventDelete={handleEventDelete}

@@ -1,24 +1,22 @@
 "use client";
 
-import { DayHeaderProps } from "@/types/calendar";
-import { memo } from "react";
-import { format, isSameDay } from "date-fns";
-import { cn } from "@/lib/utils";
+import { DayHeaderContentArg } from "@fullcalendar/core";
+import { format as formatDate } from "date-fns";
+import { mn } from "date-fns/locale";
 
-export const DayHeader = memo(({ info }: DayHeaderProps) => {
+interface DayHeaderProps {
+  info: DayHeaderContentArg;
+  locale?: string;
+  formatStr?: string;
+}
+
+export const DayHeader: React.FC<DayHeaderProps> = ({
+  info,
+  locale = "mn",
+  formatStr = "EEE MM/dd",
+}) => {
   const date = info.date;
-  const isToday = isSameDay(date, new Date());
+  const formattedDate = formatDate(date, formatStr, { locale: mn });
 
-  return (
-    <div className="flex flex-col items-start p-2">
-      <span className="text-xs text-muted-foreground">
-        {format(date, "EEE")}
-      </span>
-      <span className={cn("text-sm font-medium", isToday && "text-primary")}>
-        {format(date, "d")}
-      </span>
-    </div>
-  );
-});
-
-DayHeader.displayName = "DayHeader";
+  return <div className="font-medium text-sm">{formattedDate}</div>;
+};

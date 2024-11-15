@@ -17,21 +17,21 @@ export const CALENDAR_CONFIG = {
     MONTH: 'dayGridMonth',
     WEEK: 'timeGridWeek',
     DAY: 'timeGridDay',
-  } as const,
+  },
 
   TIME: {
     SLOT_MIN_TIME: '00:00:00',
     SLOT_MAX_TIME: '24:00:00',
     SLOT_DURATION: '00:30:00',
     SNAP_DURATION: '00:15:00',
-  } as const,
+  },
 
   DEFAULTS: {
-    INITIAL_VIEW: 'timeGridWeek' as CalendarView,
+    INITIAL_VIEW: 'timeGridWeek',
     FIRST_DAY: 1,
     ALL_DAY_SLOT: false,
     EDITABLE: true,
     SELECTABLE: true,
     NOW_INDICATOR: true,
-  } as const,
-}; 
+  },
+} as const; 

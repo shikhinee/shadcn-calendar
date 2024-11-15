@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarNavProps, CalendarView } from "@/types/calendar";
 import { format } from "date-fns";
+import { mn } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { CALENDAR_CONFIG } from "@/config/calendar-config";
 
-const AnimatedTabsTrigger = motion(TabsTrigger);
+const AnimatedTabsTrigger = motion.create(TabsTrigger);
 
 export default function CalendarNav({
   calendarRef,
@@ -29,7 +30,7 @@ export default function CalendarNav({
   };
 
   const handleViewChange = (view: string) => {
-    onViewChange?.(view as CalendarView);
+    onViewChange(view as CalendarView);
   };
 
   return (
@@ -42,37 +43,26 @@ export default function CalendarNav({
           <ChevronRight className="h-4 w-4" />
         </Button>
         <Button variant="outline" onClick={handleToday}>
-          Today
+          Өнөөдөр
         </Button>
-        <h2 className="text-xl font-bold">{format(viewedDate, "MMMM yyyy")}</h2>
       </div>
-
+      <h2 className="text-xl font-bold">
+        {format(viewedDate, "MMMM yyyy", { locale: mn })}
+      </h2>
       <Tabs
         value={currentView}
         onValueChange={handleViewChange}
         className="w-[400px]"
       >
         <TabsList className="grid w-full grid-cols-3">
-          <AnimatedTabsTrigger
-            value={CALENDAR_CONFIG.VIEWS.MONTH}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Month
+          <AnimatedTabsTrigger value={CALENDAR_CONFIG.VIEWS.DAY}>
+            Өдөр
           </AnimatedTabsTrigger>
-          <AnimatedTabsTrigger
-            value={CALENDAR_CONFIG.VIEWS.WEEK}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Week
+          <AnimatedTabsTrigger value={CALENDAR_CONFIG.VIEWS.WEEK}>
+            7 хоног
           </AnimatedTabsTrigger>
-          <AnimatedTabsTrigger
-            value={CALENDAR_CONFIG.VIEWS.DAY}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Day
+          <AnimatedTabsTrigger value={CALENDAR_CONFIG.VIEWS.MONTH}>
+            Сар
           </AnimatedTabsTrigger>
         </TabsList>
       </Tabs>

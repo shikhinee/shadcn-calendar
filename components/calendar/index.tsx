@@ -9,7 +9,8 @@ import { DayRender } from "./day-render";
 import CalendarNav from "./calendar-nav";
 import { useLoading } from "@/hooks/useLoading";
 import { CalendarErrorBoundary } from "../error-boundaries/calendar-error-boundary";
-import { CalendarProps, CalendarView } from "@/types/calendar";
+import { CalendarProps, CalendarEvent, CalendarView } from "@/types/calendar";
+import { MN_LOCALE } from "@/lib/localization/mn";
 
 const Calendar: React.FC<CalendarProps> = ({
   events,
@@ -22,21 +23,44 @@ const Calendar: React.FC<CalendarProps> = ({
   const [currentView, setCurrentView] = useState<CalendarView>(
     CALENDAR_CONFIG.DEFAULTS.INITIAL_VIEW
   );
-  const { isLoading, withLoading } = useLoading();
+  const { isLoading } = useLoading();
+
+  const getStatusColor = (status: string) => {
+    if (!status) return "hsl(var(--muted))";
+
+    switch (status.toUpperCase()) {
+      case "CREATED":
+        return "hsl(var(--primary))";
+      case "PAID":
+        return "hsl(var(--success))";
+      case "CANCELLED":
+        return "hsl(var(--destructive))";
+      case "PENDING":
+        return "hsl(var(--warning))";
+      default:
+        return "hsl(var(--muted))";
+    }
+  };
 
   const handleViewChange = useCallback((view: CalendarView) => {
     setCurrentView(view);
     calendarRef.current?.getApi().changeView(view);
   }, []);
 
+  const transformedEvents = events.map((event) => {
+    console.log("Event being transformed:", event); // Debug log
+    return {
+      ...event,
+      backgroundColor: getStatusColor(event.extendedProps?.status || ""),
+      classNames: `status-${
+        event.extendedProps?.status?.toLowerCase() || "default"
+      }`,
+    };
+  });
+
   return (
     <CalendarErrorBoundary>
-      <div className="flex flex-col h-[calc(100vh-2rem)] bg-background relative">
-        {isLoading && (
-          <div className="absolute inset-0 bg-background/50 backdrop-blur-sm z-50 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-          </div>
-        )}
+      <div className="flex flex-col h-[calc(100vh-2rem)] bg-background">
         <CalendarNav
           calendarRef={calendarRef}
           viewedDate={viewedDate}
@@ -51,8 +75,25 @@ const Calendar: React.FC<CalendarProps> = ({
             ref={calendarRef}
             plugins={CALENDAR_PLUGINS}
             initialView={currentView}
+            locale={MN_LOCALE}
             headerToolbar={false}
-            events={events}
+            events={transformedEvents}
+            slotLabelFormat={{
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            }}
+            dayHeaderFormat={{
+              weekday: "short",
+              month: "2-digit",
+              day: "2-digit",
+              omitCommas: true,
+            }}
+            eventTimeFormat={{
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            }}
             eventContent={(eventInfo) => (
               <EventItem
                 info={eventInfo}
@@ -61,7 +102,9 @@ const Calendar: React.FC<CalendarProps> = ({
                 isLoading={isLoading}
               />
             )}
-            dayHeaderContent={(info) => <DayHeader info={info} />}
+            dayHeaderContent={(info) => (
+              <DayHeader info={info} locale="mn" formatStr="EEE MM/dd" />
+            )}
             dayCellContent={(info) => <DayRender info={info} />}
             height="100%"
             slotMinTime={CALENDAR_CONFIG.TIME.SLOT_MIN_TIME}

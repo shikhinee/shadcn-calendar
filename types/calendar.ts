@@ -10,9 +10,18 @@ export interface CalendarEvent extends EventInput {
   start: Date
   end: Date
   extendedProps: {
-    description: string
+    status: string
+    number_of_adults: number
+    number_of_children: number
+    additional_info: string
+    phone: number
+    user_id: number
+    business_id: number
+    service_id: number
+    is_arrived: boolean
   }
   backgroundColor?: string
+  classNames?: string | string[]
 }
 
 export interface EventItemProps {
@@ -23,13 +32,12 @@ export interface EventItemProps {
 }
 
 export interface CalendarNavProps {
-  calendarRef: MutableRefObject<FullCalendar | null>
+  calendarRef: React.RefObject<FullCalendar>
   viewedDate: Date
+  currentView: CalendarView
+  onViewChange: (view: CalendarView) => void
   start: Date
   end: Date
-  currentView: CalendarView
-  onViewChange?: (view: CalendarView) => void
-  onNavigate?: (direction: 'prev' | 'next' | 'today') => void
 }
 
 export interface CalendarProps {
